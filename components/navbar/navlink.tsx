@@ -4,10 +4,12 @@ import {IoClose, IoMenu} from "react-icons/io5"
 import { useState } from "react";
 import clsx from "clsx";
 import Link from "next/link";
+// import { useSession, signOut } from "next-auth/react";
 
 
 const Navlink = () => {
     const [open, setOpen] = useState(false);
+    // const {data: session} = useSession();
     return (
         <>
             <button onClick={()=> setOpen(!open)} className="inline-flex items-center p-2 justify-center text-sm text-gray-500 rounded-md md:hidden hover:bg-gray-100">
