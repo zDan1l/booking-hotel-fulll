@@ -4,8 +4,9 @@ import { IoCloudUploadOutline, IoTrashOutline } from "react-icons/io5"
 import { type PutBlobResult } from "@vercel/blob"
 import Image from "next/image"
 import { BarLoader } from "react-spinners";
+import { Amenities } from "@prisma/client"
 
-const CreateForm = () => {
+const CreateForm = ({amenities} : {amenities: Amenities[]}) => {
     const inputFileRef = useRef<HTMLInputElement>(null);
     const [ image, setImage ] = useState("");
     const [ message, setMessage ] = useState("");
@@ -67,10 +68,14 @@ const CreateForm = () => {
                         </div>
                     </div>
                     <div className="mb-4 grid md:grid-cols-3">
-                        <input type="checkbox" name="amenities" className="w-4 h-4 text-blue-600  border-gray-300 rounded"/>
-                        <label htmlFor="amenities" className="ms-2 font-medium text-gray-900 capitalize">
-                            Spa
-                        </label>
+                        {amenities.map((item) => (
+                            <div className="flex items-center mb-4" key={item.id}>
+                                <input type="checkbox" name="amenities" className="w-4 h-4 text-blue-600  border-gray-300 rounded" defaultValue={item.id}/>
+                                <label htmlFor="amenities" className="ms-2 font-medium text-gray-900 capitalize">
+                                    {item.name}
+                                </label>
+                            </div>
+                        ))}
                         <div aria-live="polite" aria-atomic="true" >
                             <span className="text-sm text-red-500 mt-2">message</span>
                         </div>
@@ -81,8 +86,8 @@ const CreateForm = () => {
                         <div className="flex flex-col items-center justify-center text-gray-500 pt-5 pb-6 z-10">
                                 {pending ? <BarLoader/> : null}
                                 {image ? (
-                                    <button type="button" onClick={()=> deleteImage(image)} className="flex items-center justify-center bg-transparent size-6 rounded-sm absolute right-1 top-1 text-white hover:bg-red-400">
-                                        <IoTrashOutline className="size-4 text-transparent hover:text-white" />
+                                    <button type="button" onClick={()=> deleteImage(image)} className="flex items-center justify-center  size-6 rounded-sm absolute right-1 top-1 text-white bg-red-400 cursor-pointer">
+                                        <IoTrashOutline className="size-4 text-white" />
                                     </button>
                                 ): (
                                     <div className="flex flex-col items-center justify-center">
