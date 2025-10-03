@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { ContactSchema } from "@/lib/zod";
-
+import { ContactSchema, RoomSchema } from "@/lib/zod";
+import { redirect } from "next/navigation";
 
 export const ContactMessage = async (prevState: unknown ,formData: FormData) => {
     const validatedFields = ContactSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -26,4 +26,46 @@ export const ContactMessage = async (prevState: unknown ,formData: FormData) => 
     } catch (error) {
         console.log(error);
     }
+}
+
+export const saveRoom = async (image: string, prevState: unknown, formData: FormData) => {
+    if(!image) return {message : "Image is Required."}
+    const rowData = {
+        name: formData.get("name"),
+        description : formData.get("description"),
+        capacity : formData.get("capacity"),
+        price : formData.get("price"),
+        amenities : formData.getAll("amenities")
+    };
+
+    const validatedField = RoomSchema.safeParse(rowData);
+
+    if(!validatedField.success){
+        return {error : validatedField.error.flatten().fieldErrors}
+    }
+
+    const { name, description, price, capacity, amenities } = validatedField.data;
+
+    try {
+        await prisma.room.create({
+            data : {
+                name,
+                description,
+                image,
+                price,
+                capacity,
+                RoomAmenities : {
+                    createMany : {
+                        data : amenities.map((item) => ({
+                            amenitiesId : item
+                        }))
+                    }
+                }
+            }
+        })
+    } catch (error) {
+        console.log(error)
+    }
+
+    redirect("/admin/room");
 }
