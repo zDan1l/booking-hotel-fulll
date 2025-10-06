@@ -14,3 +14,9 @@ export const RoomSchema = object({
     price : coerce.number().gt(0),
     amenities : array(string()).nonempty()
 })
+
+
+export const ReserveSchema = object({
+    name: string().min(1),
+    phone : string().min(10),
+})

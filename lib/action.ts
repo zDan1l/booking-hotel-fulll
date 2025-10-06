@@ -1,9 +1,11 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { ContactSchema, RoomSchema } from "@/lib/zod";
+import { ContactSchema, RoomSchema, ReserveSchema } from "@/lib/zod";
 import { redirect } from "next/navigation";
 import { del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
+import { differenceInCalendarDays } from "date-fns";
 
 export const ContactMessage = async (prevState: unknown ,formData: FormData) => {
     const validatedFields = ContactSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -135,4 +137,69 @@ export const updateoom = async (image: string, roomId : string, prevState: unkno
     }
     revalidatePath("/admin/room");
     redirect("/admin/room");
+}
+
+// delete room
+export const createReserve = async (
+    roomId : string,
+    price: number,
+    startDate : Date,
+    endDate : Date,
+    prevState: unknown,
+    formData : FormData
+) => {
+    const session = await auth()
+    if(!session || !session.user || !session.user.id) redirect(`/signin?redirect_url=room/${roomId}`);
+    const rowData = {
+        name : formData.get("name"),
+        phone : formData.get("phone"),
+    }
+
+    const validatedField = ReserveSchema.safeParse(rowData);
+
+    if(!validatedField.success){
+        return {
+            error : validatedField.error.flatten().fieldErrors
+        }
+    }
+
+    const { name, phone } = validatedField.data;
+    const night = differenceInCalendarDays(endDate, startDate);
+    if(night <= 0) return {messageDate : "Date must be at least 1 night"};
+    const total = price * night;
+    let reservationId
+    try {
+        await prisma.$transaction(async (tx) => {
+            await tx.user.update({
+                data: {
+                    name,
+                    phone
+                },
+                where : {id: session.user.id}
+            })
+            const reservation = await tx.reservation.create({
+                data : {
+                    startDate : startDate,
+                    endDate : endDate,
+                    price : price,
+                    roomId : roomId,
+                    userId : session.user.id as string,
+                    Payment : {
+                        create : {
+                            amount : total
+                        }
+                    }
+
+                }
+            })
+            reservationId = reservation.id;
+        })
+       
+    } catch (error) {
+        console.log(error);
+    }
+    redirect(`/checkout/${reservationId}`)
+    
+
+    
 }
