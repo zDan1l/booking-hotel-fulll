@@ -1,7 +1,7 @@
 "use client"
 import { useRef, useState, useTransition } from "react"
 import { useActionState } from "react"
-import { saveRoom } from "@/lib/action"
+import { updateoom } from "@/lib/action"
 import { IoCloudUploadOutline, IoTrashOutline } from "react-icons/io5"
 import { type PutBlobResult } from "@vercel/blob"
 import Image from "next/image"
@@ -61,11 +61,11 @@ const EditForm = ({
             
     }
 
-    const [ state, formAction, isPending ] = useActionState(saveRoom.bind(null, image), null);
+    const [ state, formAction, isPending ] = useActionState(updateoom.bind(null, image, room.id), null);
 
     const checkAmenities = room.RoomAmenities.map((item) => item.amenitiesId)
 
-    return (    
+    return (      
         <form action={formAction}>
             <div className="grid md:grid-cols-12 gap-5">
                 <div className="col-span-8 bg-white p-4">
