@@ -2,6 +2,8 @@
 import { prisma } from "@/lib/prisma";
 import { ContactSchema, RoomSchema } from "@/lib/zod";
 import { redirect } from "next/navigation";
+import { del } from "@vercel/blob";
+import { revalidatePath } from "next/cache";
 
 export const ContactMessage = async (prevState: unknown ,formData: FormData) => {
     const validatedFields = ContactSchema.safeParse(Object.fromEntries(formData.entries()));
@@ -68,4 +70,20 @@ export const saveRoom = async (image: string, prevState: unknown, formData: Form
     }
 
     redirect("/admin/room");
+}
+
+// delete room
+export const deleteRoom = async (id: string, image:string) => {
+    try {
+        await del(image);
+        await prisma.room.delete({
+            where : {
+                id
+            }
+        })
+    } catch (error) {
+        console.log(error);
+    }
+
+    revalidatePath("/admin/room");
 }
