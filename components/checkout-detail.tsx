@@ -28,9 +28,9 @@ const CheckoutDetail = async({reservationId} : {reservationId : string}) => {
                         </div>
                     </div>
                 </div>
-            </div>
             {/* payment button */}
             <PaymentButton reservation={reservation} />
+            </div>
             <div className="border border-gray-200 px-3 py-5 bg-white rounded-sm">
                 <table className="w-full">
                     <tbody>
