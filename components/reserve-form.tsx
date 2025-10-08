@@ -5,11 +5,17 @@ import { addDays } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { createReserve } from "@/lib/action";
-import { RoomDetailProps } from "@/types/room";
+import { DisableDateProps, RoomDetailProps } from "@/types/room";
 import clsx from "clsx";
 
  
-const ReserveForm = ({room} : {room: RoomDetailProps}) => {
+const ReserveForm = ({
+    room,
+    disableDate
+} : {
+    room: RoomDetailProps;
+    disableDate: DisableDateProps[];
+}) => {
     const StartDate = new Date();
     const EndDate = addDays(StartDate, 1);
 
@@ -23,12 +29,21 @@ const ReserveForm = ({room} : {room: RoomDetailProps}) => {
     }
 
     const [ state, formAction, isPending ] = useActionState(createReserve.bind(null,room.id, room.price, startDate, endDate), null)
+
+    const excludeDates = disableDate.map((item) => {
+        return{
+            start: item.startDate,
+            end: item.endDate
+        }
+    })
+
     return (
         <div>
             <form action={formAction}>
                 <div className="mb-4">
                     <label className="block mb-2 text-sm font-medium text-gray-900">Arrival - Departure</label>
-                    <DatePicker selected={startDate} startDate={startDate} endDate={endDate} minDate={new Date()} selectsRange={true} onChange={handleDateChange} dateFormat={"dd-mm-yyyy"} wrapperClassName="w-full" className="py-2 px-4 rounded-md border border-gray-300 w-full"/>
+                    <DatePicker selected={startDate} startDate={startDate} endDate={endDate} minDate={new Date()} selectsRange={true} onChange={handleDateChange} 
+                    excludeDateIntervals={excludeDates} dateFormat={"dd-mm-yyyy"} wrapperClassName="w-full" className="py-2 px-4 rounded-md border border-gray-300 w-full"/>
                     <div arial-live="polite" aria-atomic="true">
                         <p className="text-sm text-red-500 mt-2">{state?.messageDate}</p>
                     </div>
