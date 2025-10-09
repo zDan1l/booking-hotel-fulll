@@ -53,9 +53,9 @@ const MyReseverList = async() => {
                     </div>
                     <div className="flex items-end justify-end absolute inset-4">
                         {item.Payment?.status === "unpaid" ? (
-                            <Link href={`/checkout/${item.id}}`} className="px-6 py-1 bg-orange-400 text-white rounded-md hover:bg-orange-500">Pay Now</Link>
+                            <Link href={`/checkout/${item.id}`} className="px-6 py-1 bg-orange-400 text-white rounded-md hover:bg-orange-500">Pay Now</Link>
                         ) : (
-                            <Link href={`/myreservation/${item.id}}`} className="px-5 py-1 bg-orange-400 text-white rounded-md hover:bg-orange-500">View Detail</Link>
+                            <Link href={`/myreservation/${item.id}`} className="px-5 py-1 bg-orange-400 text-white rounded-md hover:bg-orange-500">View Detail</Link>
                         ) }
                     </div>
                 </div>
