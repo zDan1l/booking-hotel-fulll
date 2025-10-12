@@ -7,8 +7,8 @@ const Main = async() => {
     const rooms = await getRoom();
     if(!rooms) return notFound();
     return (
-        <div className="max-w-screen-xl py-6 pb-20 px-4 mx-auto">
-            <div className="grid gap-7 md:grid-cols-3">
+        <div className="px-4">
+            <div className="grid gap-8 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
                 {rooms.map((room) => (
                     <Card room={room} key={room.id} />
                 ))}
